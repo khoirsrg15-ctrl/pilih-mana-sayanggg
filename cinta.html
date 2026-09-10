@@ -1,0 +1,719 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Message You ❤️</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            min-height: 100vh;
+            font-family: "Segoe UI", sans-serif;
+            background:
+                radial-gradient(circle at top, #5c1d35, transparent 45%),
+                linear-gradient(135deg, #160b12, #2b101c, #160b12);
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* Background hearts */
+        .hearts {
+            position: fixed;
+            inset: 0;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+
+        .heart {
+            position: absolute;
+            bottom: -50px;
+            animation: naik 8s linear infinite;
+            opacity: .6;
+            font-size: 20px;
+        }
+
+        @keyframes naik {
+            0% {
+                transform: translateY(0) rotate(0);
+                opacity: 0;
+            }
+
+            20% {
+                opacity: .7;
+            }
+
+            100% {
+                transform: translateY(-110vh) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            width: min(92%, 430px);
+            margin: auto;
+            padding: 35px 0;
+        }
+
+        .card {
+            background: rgba(255,255,255,.08);
+            border: 1px solid rgba(255,255,255,.15);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-radius: 28px;
+            padding: 28px 22px;
+            box-shadow: 0 25px 70px rgba(0,0,0,.45);
+            animation: muncul .8s ease;
+        }
+
+        @keyframes muncul {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(.96);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .photo {
+            width: 145px;
+            height: 145px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            padding: 4px;
+            background: linear-gradient(135deg, #ff8fab, #ffd1dc, #ff477e);
+            box-shadow: 0 0 35px rgba(255,80,130,.5);
+        }
+
+        .photo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            border: 3px solid #241019;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #e7cbd4;
+            font-size: 14px;
+            margin-bottom: 25px;
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+            animation: muncul .5s ease;
+        }
+
+        h2 {
+            font-size: 20px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .description {
+            text-align: center;
+            color: #d9bdc7;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            border-radius: 14px;
+            border: 1px solid rgba(255,255,255,.15);
+            outline: none;
+            background: rgba(255,255,255,.09);
+            color: white;
+            font-size: 15px;
+            margin-bottom: 15px;
+        }
+
+        input::placeholder {
+            color: #bfaab2;
+        }
+
+        input[type="date"],
+        input[type="time"] {
+            color-scheme: dark;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 600;
+            color: white;
+            background: linear-gradient(135deg, #ff477e, #d6336c);
+            box-shadow: 0 8px 25px rgba(214,51,108,.25);
+            transition: .25s;
+            margin-top: 8px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 30px rgba(214,51,108,.4);
+        }
+
+        button:active {
+            transform: scale(.97);
+        }
+
+        .choices {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .choice {
+            min-height: 105px;
+            margin: 0;
+            background: rgba(255,255,255,.07);
+            border: 1px solid rgba(255,255,255,.13);
+            box-shadow: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+        }
+
+        .choice .emoji {
+            font-size: 31px;
+        }
+
+        .choice span:last-child {
+            font-size: 14px;
+        }
+
+        .choice.selected {
+            background: linear-gradient(
+                135deg,
+                rgba(255,71,126,.35),
+                rgba(214,51,108,.2)
+            );
+            border: 1px solid #ff7098;
+            box-shadow: 0 0 20px rgba(255,71,126,.25);
+        }
+
+        .selected-text {
+            text-align: center;
+            color: #ffb5c9;
+            min-height: 22px;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .message {
+            text-align: center;
+            line-height: 1.7;
+            color: #f0dce2;
+            font-size: 14px;
+            margin: 20px 0;
+        }
+
+        .love {
+            text-align: center;
+            font-size: 30px;
+            font-weight: bold;
+            margin: 25px 0;
+            background: linear-gradient(90deg, #ff91ae, #fff, #ff6d95);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .summary {
+            background: rgba(255,255,255,.07);
+            border-radius: 17px;
+            padding: 18px;
+            margin: 20px 0;
+            line-height: 1.8;
+            font-size: 14px;
+            color: #ecd6de;
+        }
+
+        .summary strong {
+            color: #ffabc0;
+        }
+
+        .error {
+            color: #ff9db5;
+            text-align: center;
+            font-size: 13px;
+            margin-top: 10px;
+            min-height: 18px;
+        }
+
+        .small {
+            text-align: center;
+            color: #a99099;
+            font-size: 11px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 360px) {
+            .choices {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<div class="container">
+
+    <div class="card">
+
+        <!-- FOTO -->
+        <div class="photo">
+            <img src="love.jpeg" alt="Foto">
+        </div>
+
+        <h1>Message You ❤️</h1>
+        <p class="subtitle">
+            Ada sesuatu yang ingin aku sampaikan...
+        </p>
+
+
+        <!-- ================= PIN ================= -->
+
+        <div class="section active" id="pinSection">
+
+            <h2>Login Dulu Ya 💕</h2>
+
+            <p class="description">
+                Masukkan PIN 6 digit untuk membuka pesan ❤️
+            </p>
+
+            <input
+                type="password"
+                id="pin"
+                maxlength="6"
+                inputmode="numeric"
+                placeholder="Masukkan PIN 6 digit"
+            >
+
+            <button onclick="cekPin()">
+                Masuk ❤️
+            </button>
+
+            <div class="error" id="pinError"></div>
+
+        </div>
+
+
+        <!-- ================= PILIHAN ================= -->
+
+        <div class="section" id="choiceSection">
+
+            <h2>Untuk Kita Kedepannya? ❤️</h2>
+
+            <p class="description">
+                Pilih salah satu yang kamu mau...
+            </p>
+
+            <div class="choices">
+
+                <button class="choice" onclick="pilih('Nikah', this)">
+                    <span class="emoji">💍</span>
+                    <span>Nikah</span>
+                </button>
+
+                <button class="choice" onclick="pilih('Tunangan', this)">
+                    <span class="emoji">💎</span>
+                    <span>Tunangan</span>
+                </button>
+
+                <button class="choice" onclick="pilih('Check In', this)">
+                    <span class="emoji">🏨</span>
+                    <span>Check In</span>
+                </button>
+
+                <button class="choice" onclick="pilih('Punya Anak', this)">
+                    <span class="emoji">👶</span>
+                    <span>Punya Anak</span>
+                </button>
+
+            </div>
+
+            <div class="selected-text" id="selectedText">
+                Belum memilih ❤️
+            </div>
+
+            <button onclick="lanjutTanggal()">
+                Lanjut 💌
+            </button>
+
+        </div>
+
+
+        <!-- ================= TANGGAL ================= -->
+
+        <div class="section" id="dateSection">
+
+            <h2>Pilih Tanggal & Jam 💖</h2>
+
+            <p class="description">
+                Kapan kita mulai mewujudkannya?
+            </p>
+
+            <input type="date" id="tanggal">
+
+            <input type="time" id="jam">
+
+            <div class="error" id="dateError"></div>
+
+            <button onclick="lanjutKonfirmasi()">
+                Lanjut 💌
+            </button>
+
+        </div>
+
+
+        <!-- ================= KONFIRMASI ================= -->
+
+        <div class="section" id="confirmSection">
+
+            <h2>Jadi Kita Mau... 🥹❤️</h2>
+
+            <div class="summary">
+
+                <div>
+                    💖 Pilihan:
+                    <strong id="summaryChoice"></strong>
+                </div>
+
+                <div>
+                    📅 Tanggal:
+                    <strong id="summaryDate"></strong>
+                </div>
+
+                <div>
+                    ⏰ Jam:
+                    <strong id="summaryTime"></strong>
+                </div>
+
+            </div>
+
+            <p class="message">
+                Aku nggak tahu masa depan akan seperti apa,
+                tapi kalau boleh memilih...
+                <br><br>
+                aku ingin menjalaninya sama kamu. ❤️
+            </p>
+
+            <button onclick="kirimWhatsApp()">
+                Kirim Jawaban 💌
+            </button>
+
+        </div>
+
+
+        <!-- ================= SELESAI ================= -->
+
+        <div class="section" id="successSection">
+
+            <h2>Terima Kasih ❤️</h2>
+
+            <p class="message">
+                Jawaban kamu sudah disiapkan.
+                <br>
+                Semoga pilihan kecil ini menjadi awal
+                dari cerita besar kita. 🥹
+            </p>
+
+            <div class="love">
+                I LOVE YOU ❤️
+            </div>
+
+            <button onclick="ulang()">
+                Kembali 💕
+            </button>
+
+        </div>
+
+        <p class="small">
+            Made with love ❤️
+        </p>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    /* =========================================
+       PENGATURAN
+    ========================================= */
+
+    // GANTI PIN DI SINI
+    const PIN_BENAR = "382007";
+
+    // GANTI NOMOR WHATSAPP DI SINI
+    // Format: 628xxxxxxxxxx
+    const NOMOR_WHATSAPP = "6282185462270";
+
+
+    let pilihan = "";
+    let tanggal = "";
+    let jam = "";
+
+
+    /* =========================================
+       PIN
+    ========================================= */
+
+    function cekPin() {
+
+        const pin = document.getElementById("pin").value;
+        const error = document.getElementById("pinError");
+
+        if (pin === PIN_BENAR) {
+
+            tampilkan("choiceSection");
+
+        } else {
+
+            error.innerText = "PIN salah 😝 Coba lagi ❤️";
+
+        }
+    }
+
+
+    /* =========================================
+       PILIHAN
+    ========================================= */
+
+    function pilih(value, element) {
+
+        pilihan = value;
+
+        document
+            .querySelectorAll(".choice")
+            .forEach(btn => btn.classList.remove("selected"));
+
+        element.classList.add("selected");
+
+        document.getElementById("selectedText").innerText =
+            "Kamu memilih: " + value + " ❤️";
+    }
+
+
+    function lanjutTanggal() {
+
+        if (!pilihan) {
+
+            document.getElementById("selectedText").innerText =
+                "Pilih salah satu dulu ya 🥺❤️";
+
+            return;
+        }
+
+        tampilkan("dateSection");
+    }
+
+
+    /* =========================================
+       TANGGAL
+    ========================================= */
+
+    function lanjutKonfirmasi() {
+
+        tanggal = document.getElementById("tanggal").value;
+        jam = document.getElementById("jam").value;
+
+        const error = document.getElementById("dateError");
+
+        if (!tanggal || !jam) {
+
+            error.innerText =
+                "Pilih tanggal dan jam dulu ya ❤️";
+
+            return;
+        }
+
+        error.innerText = "";
+
+        document.getElementById("summaryChoice").innerText =
+            pilihan;
+
+        document.getElementById("summaryDate").innerText =
+            formatTanggal(tanggal);
+
+        document.getElementById("summaryTime").innerText =
+            jam;
+
+        tampilkan("confirmSection");
+    }
+
+
+    /* =========================================
+       FORMAT TANGGAL
+    ========================================= */
+
+    function formatTanggal(date) {
+
+        const d = new Date(date + "T00:00:00");
+
+        return d.toLocaleDateString("id-ID", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric"
+        });
+    }
+
+
+    /* =========================================
+       WHATSAPP
+    ========================================= */
+
+    function kirimWhatsApp() {
+
+        const pesan =
+`Hai ❤️
+
+Aku sudah memilih:
+
+💖 Pilihan: ${pilihan}
+📅 Tanggal: ${formatTanggal(tanggal)}
+⏰ Jam: ${jam}
+
+Aku siap menjalani cerita ini sama kamu. 🥹❤️
+
+I LOVE YOU ❤️`;
+
+        const url =
+            "https://wa.me/" +
+            NOMOR_WHATSAPP +
+            "?text=" +
+            encodeURIComponent(pesan);
+
+        window.open(url, "_blank");
+
+        tampilkan("successSection");
+    }
+
+
+    /* =========================================
+       NAVIGASI SECTION
+    ========================================= */
+
+    function tampilkan(id) {
+
+        document
+            .querySelectorAll(".section")
+            .forEach(section => {
+                section.classList.remove("active");
+            });
+
+        document
+            .getElementById(id)
+            .classList.add("active");
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+    }
+
+
+    /* =========================================
+       ULANG
+    ========================================= */
+
+    function ulang() {
+
+        pilihan = "";
+        tanggal = "";
+        jam = "";
+
+        document.getElementById("pin").value = "";
+        document.getElementById("tanggal").value = "";
+        document.getElementById("jam").value = "";
+
+        document
+            .querySelectorAll(".choice")
+            .forEach(btn => btn.classList.remove("selected"));
+
+        document.getElementById("selectedText").innerText =
+            "Belum memilih ❤️";
+
+        tampilkan("pinSection");
+    }
+
+
+    /* =========================================
+       FLOATING HEARTS
+    ========================================= */
+
+    function buatHeart() {
+
+        const heart = document.createElement("div");
+
+        heart.className = "heart";
+
+        heart.innerText =
+            ["❤️", "💕", "💗", "💖", "💘", "✨"]
+            [Math.floor(Math.random() * 6)];
+
+        heart.style.left =
+            Math.random() * 100 + "%";
+
+        heart.style.animationDuration =
+            (5 + Math.random() * 5) + "s";
+
+        heart.style.fontSize =
+            (14 + Math.random() * 20) + "px";
+
+        document
+            .getElementById("hearts")
+            .appendChild(heart);
+
+        setTimeout(() => {
+            heart.remove();
+        }, 10000);
+    }
+
+    setInterval(buatHeart, 700);
+
+</script>
+
+</body>
+</html>
+```
+
+
